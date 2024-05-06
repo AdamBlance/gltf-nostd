@@ -1,3 +1,4 @@
+use alloc::string::String;
 use crate::{accessor, scene, Document};
 
 #[cfg(feature = "utils")]

@@ -1,3 +1,5 @@
+#![no_std]
+#![feature(error_in_core)]
 #![deny(missing_docs)]
 #![allow(unknown_lints)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
@@ -89,6 +91,7 @@ extern crate lazy_static;
 
 /// Contains (de)serializable data structures that match the glTF JSON text.
 pub extern crate gltf_json as json;
+extern crate alloc;
 
 /// Accessors for reading vertex attributes from buffer views.
 pub mod accessor;
@@ -144,6 +147,9 @@ pub mod skin;
 /// Textures and their samplers.
 pub mod texture;
 
+use alloc::string::String;
+use alloc::vec::Vec;
+use core::{ops, result};
 #[cfg(feature = "extensions")]
 use json::Value;
 #[cfg(feature = "extensions")]
@@ -163,9 +169,6 @@ pub use self::camera::Camera;
 pub use self::image::Image;
 #[cfg(feature = "import")]
 #[doc(inline)]
-pub use self::import::import;
-#[cfg(feature = "import")]
-#[doc(inline)]
 pub use self::import::import_buffers;
 #[cfg(feature = "import")]
 #[doc(inline)]
@@ -183,9 +186,6 @@ pub use self::scene::{Node, Scene};
 pub use self::skin::Skin;
 #[doc(inline)]
 pub use self::texture::Texture;
-
-use std::path::Path;
-use std::{fs, io, ops, result};
 
 pub(crate) trait Normalize<T> {
     fn normalize(self) -> T;
@@ -221,9 +221,6 @@ pub enum Error {
 
     /// JSON deserialization error.
     Deserialize(json::Error),
-
-    /// Standard I/O error.
-    Io(std::io::Error),
 
     /// Image decoding error.
     #[cfg(feature = "import")]
@@ -274,49 +271,6 @@ pub struct Gltf {
 pub struct Document(json::Root);
 
 impl Gltf {
-    /// Convenience function that loads glTF from the file system.
-    pub fn open<P>(path: P) -> Result<Self>
-    where
-        P: AsRef<Path>,
-    {
-        let file = fs::File::open(path)?;
-        let reader = io::BufReader::new(file);
-        let gltf = Self::from_reader(reader)?;
-        Ok(gltf)
-    }
-
-    /// Loads glTF from a reader without performing validation checks.
-    pub fn from_reader_without_validation<R>(mut reader: R) -> Result<Self>
-    where
-        R: io::Read + io::Seek,
-    {
-        let mut magic = [0u8; 4];
-        reader.read_exact(&mut magic)?;
-        reader.seek(io::SeekFrom::Current(-4))?;
-        let (json, blob): (json::Root, Option<Vec<u8>>);
-        if magic.starts_with(b"glTF") {
-            let mut glb = binary::Glb::from_reader(reader)?;
-            // TODO: use `json::from_reader` instead of `json::from_slice`
-            json = json::deserialize::from_slice(&glb.json)?;
-            blob = glb.bin.take().map(|x| x.into_owned());
-        } else {
-            json = json::deserialize::from_reader(reader)?;
-            blob = None;
-        };
-        let document = Document::from_json_without_validation(json);
-        Ok(Gltf { document, blob })
-    }
-
-    /// Loads glTF from a reader.
-    pub fn from_reader<R>(reader: R) -> Result<Self>
-    where
-        R: io::Read + io::Seek,
-    {
-        let gltf = Self::from_reader_without_validation(reader)?;
-        gltf.document.validate()?;
-        Ok(gltf)
-    }
-
     /// Loads glTF from a slice of bytes without performing validation
     /// checks.
     pub fn from_slice_without_validation(slice: &[u8]) -> Result<Self> {
@@ -575,8 +529,8 @@ impl Document {
     }
 }
 
-impl std::fmt::Display for Error {
-    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+impl core::fmt::Display for Error {
+    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
         match self {
             #[cfg(feature = "import")]
             Error::Base64(ref e) => e.fmt(f),
@@ -594,7 +548,6 @@ impl std::fmt::Display for Error {
                 )
             }
             Error::Deserialize(ref e) => e.fmt(f),
-            Error::Io(ref e) => e.fmt(f),
             #[cfg(feature = "import")]
             Error::Image(ref e) => e.fmt(f),
             #[cfg(feature = "import")]
@@ -622,17 +575,11 @@ impl std::fmt::Display for Error {
     }
 }
 
-impl std::error::Error for Error {}
+impl core::error::Error for Error {}
 
 impl From<binary::Error> for Error {
     fn from(err: binary::Error) -> Self {
         Error::Binary(err)
-    }
-}
-
-impl From<std::io::Error> for Error {
-    fn from(err: std::io::Error) -> Self {
-        Error::Io(err)
     }
 }
 

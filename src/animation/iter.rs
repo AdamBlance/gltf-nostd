@@ -1,5 +1,4 @@
-use std::slice;
-
+use core::slice;
 use crate::animation::{Animation, Channel, Sampler};
 
 /// An `Iterator` that visits the channels of an animation.

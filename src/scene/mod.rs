@@ -1,3 +1,4 @@
+use alloc::string::String;
 #[cfg(feature = "extensions")]
 use serde_json::{Map, Value};
 
@@ -283,9 +284,9 @@ impl<'a> Scene<'a> {
 
 #[cfg(test)]
 mod tests {
+    use core::f32::consts::PI;
     use crate::math::*;
     use crate::scene::Transform;
-    use std::f32::consts::PI;
 
     fn rotate(x: f32, y: f32, z: f32, r: f32) -> [f32; 4] {
         let r = Quaternion::from_axis_angle(Vector3::new(x, y, z).normalize(), r);

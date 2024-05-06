@@ -1,3 +1,5 @@
+use alloc::string::String;
+use alloc::vec::Vec;
 #[allow(unused)]
 use crate::{buffer, Document, Error, Result};
 
@@ -53,15 +55,6 @@ pub enum Source<'a> {
 
         /// The image data MIME type.
         mime_type: &'a str,
-    },
-
-    /// Image data is contained in an external data source.
-    Uri {
-        /// The URI of the external data source.
-        uri: &'a str,
-
-        /// The image data MIME type, if provided.
-        mime_type: Option<&'a str>,
     },
 }
 
@@ -125,9 +118,7 @@ impl<'a> Image<'a> {
             let mime_type = self.json.mime_type.as_ref().map(|x| x.0.as_str()).unwrap();
             Source::View { view, mime_type }
         } else {
-            let uri = self.json.uri.as_ref().unwrap();
-            let mime_type = self.json.mime_type.as_ref().map(|x| x.0.as_str());
-            Source::Uri { uri, mime_type }
+            panic!();
         }
     }
 

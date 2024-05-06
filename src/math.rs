@@ -14,7 +14,8 @@
 //
 // Modified for the gltf crate by the gltf library developers.
 
-use std::ops;
+
+use core::ops;
 
 #[cfg(test)]
 mod test {

@@ -56,6 +56,7 @@ pub mod iter;
 #[cfg_attr(docsrs, doc(cfg(feature = "utils")))]
 pub mod util;
 
+use alloc::string::String;
 use crate::{Accessor, Buffer, Document, Material};
 
 #[cfg(feature = "utils")]

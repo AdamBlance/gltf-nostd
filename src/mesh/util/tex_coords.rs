@@ -1,5 +1,4 @@
-use std::marker::PhantomData;
-
+use core::marker::PhantomData;
 use crate::Normalize;
 
 use super::ReadTexCoords;

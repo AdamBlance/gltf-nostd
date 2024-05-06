@@ -1,3 +1,4 @@
+use alloc::string::String;
 #[cfg(feature = "extensions")]
 use serde_json::{Map, Value};
 

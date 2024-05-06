@@ -1,3 +1,4 @@
+use alloc::string::String;
 use crate::{texture, Document};
 
 pub use json::material::AlphaMode;

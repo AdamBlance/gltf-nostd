@@ -1,3 +1,4 @@
+use alloc::string::String;
 use crate::{image, Document};
 
 pub use json::texture::{MagFilter, MinFilter, WrappingMode};

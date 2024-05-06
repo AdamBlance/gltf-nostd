@@ -1,3 +1,4 @@
+use alloc::string::String;
 use crate::Document;
 
 #[cfg(feature = "extensions")]

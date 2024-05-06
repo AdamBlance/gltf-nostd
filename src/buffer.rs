@@ -1,5 +1,7 @@
+use alloc::string::String;
+use alloc::vec::Vec;
+use core::ops;
 #[cfg(feature = "import")]
-use std::ops;
 
 use crate::Document;
 
@@ -38,16 +40,6 @@ pub struct View<'a> {
     parent: Buffer<'a>,
 }
 
-/// Describes a buffer data source.
-#[derive(Clone, Debug)]
-pub enum Source<'a> {
-    /// Buffer data is contained in the `BIN` section of binary glTF.
-    Bin,
-
-    /// Buffer data is contained in an external data source.
-    Uri(&'a str),
-}
-
 /// Buffer data belonging to an imported glTF asset.
 #[cfg(feature = "import")]
 #[cfg_attr(docsrs, doc(cfg(feature = "import")))]
@@ -80,15 +72,6 @@ impl<'a> Buffer<'a> {
     /// Returns the internal JSON index.
     pub fn index(&self) -> usize {
         self.index
-    }
-
-    /// Returns the buffer data source.
-    pub fn source(&self) -> Source<'a> {
-        if let Some(uri) = self.json.uri.as_deref() {
-            Source::Uri(uri)
-        } else {
-            Source::Bin
-        }
     }
 
     /// The length of the buffer in bytes.

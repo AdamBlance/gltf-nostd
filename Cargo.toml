@@ -29,6 +29,7 @@ gltf-json = { path = "gltf-json", version = "1.4.0" }
 lazy_static = "1"
 urlencoding = { optional = true, version = "2.1" }
 serde_json = { features = ["raw_value"], version = "1.0" }
+core2 = { version = "0.4.0", default-features = false, features = ["alloc"]}
 
 [dependencies.image]
 default-features = false
