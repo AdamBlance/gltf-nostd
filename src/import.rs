@@ -1,4 +1,3 @@
-use alloc::borrow::Cow;
 use alloc::vec::Vec;
 use crate::buffer;
 use crate::image;

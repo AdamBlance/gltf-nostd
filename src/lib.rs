@@ -169,6 +169,9 @@ pub use self::camera::Camera;
 pub use self::image::Image;
 #[cfg(feature = "import")]
 #[doc(inline)]
+pub use self::import::Import;
+#[cfg(feature = "import")]
+#[doc(inline)]
 pub use self::import::import_buffers;
 #[cfg(feature = "import")]
 #[doc(inline)]

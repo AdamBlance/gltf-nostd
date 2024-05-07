@@ -1,19 +1,17 @@
-use alloc::borrow::{Cow, ToOwned};
-use alloc::vec;
-use alloc::vec::Vec;
-use core::{fmt, mem};
-use byteorder::{ByteOrder, LittleEndian, ReadBytesExt, WriteBytesExt};
+use alloc::borrow::Cow;
+use core::fmt;
 use core2::io;
-use core2::io::Read;
-use serde_json::error::Category::Io;
+use crate::binary::Error::Io;
 
 /// Represents a Glb loader error.
 #[derive(Debug)]
 pub enum Error {
+    /// Some error when reading slice.
+    Io,
     /// Unsupported version.
     Version(u32),
     /// Magic says that file is not glTF.
-    Magic(u32),
+    Magic([u8; 4]),
     /// Length specified in GLB header exceeeds that of slice.
     Length {
         /// length specified in GLB header.
@@ -33,7 +31,7 @@ pub enum Error {
     /// Chunk of this chunkType was not expected.
     ChunkType(ChunkType),
     /// Unknown chunk type.
-    UnknownChunkType(u32),
+    UnknownChunkType([u8; 4]),
 }
 
 /// Binary glTF contents.
@@ -52,7 +50,7 @@ pub struct Glb<'a> {
 #[repr(C)]
 pub struct Header {
     /// Must be `b"glTF"`.
-    pub magic: u32,
+    pub magic: [u8; 4],
     /// Must be `2`.
     pub version: u32,
     /// Must match the length of the parent .glb file.
@@ -79,24 +77,25 @@ struct ChunkHeader {
 }
 
 impl Header {
-    fn from_reader(mut data: &[u8]) -> Result<Self, Error> {
-        let (prefix, words, suffix) = unsafe {
-            data.align_to::<u32>()
-        };
-        assert!(prefix.is_empty() && suffix.is_empty());
+    fn from_reader<R: io::Read>(mut reader: R) -> Result<Self, Error> {
+        use self::Error::Io;
+        let mut magic = [0u8; 4];
+        let mut version = [0u8; 4];
+        let mut length = [0u8; 4];
+        reader.read_exact(&mut magic).map_err(|_| Io)?;
+        reader.read_exact(&mut version).map_err(|_| Io)?;
+        reader.read_exact(&mut length).map_err(|_| Io)?;
         // We only validate magic as we don't care for version and length of
         // contents, the caller does.  Let them decide what to do next with
         // regard to version and length.
-        if words[0] == 0x46546C67 {
-            let output = Ok(Self {
-                magic: words[0],
-                version: words[1],
-                length: words[2],
-            });
-            data = &data[12..];
-            output
+        if &magic == b"glTF" {
+            Ok(Self {
+                magic,
+                version: u8_arr_to_u32(version),
+                length: u8_arr_to_u32(length),
+            })
         } else {
-            Err(Error::Magic(words[0]))
+            Err(Error::Magic(magic))
         }
     }
 
@@ -106,27 +105,22 @@ impl Header {
 }
 
 impl ChunkHeader {
-    fn from_reader(mut data: &[u8]) -> Result<Self, Error> {
-        let (prefix, words, suffix) = unsafe {
-            data.align_to::<u32>()
-        };
-        assert!(prefix.is_empty() && suffix.is_empty());
-        let length = words[3];
-        let ty = words[4];
+    fn from_reader<R: io::Read>(mut reader: R) -> Result<Self, Error> {
+        let mut length = [0u8; 4];
+        let mut ty = [0u8; 4];
+        reader.read_exact(&mut length).map_err(|_| Io)?;
+        reader.read_exact(&mut ty).map_err(|_| Io)?;
         let ty = match &ty {
-            0x4E4F534A => Ok(ChunkType::Json),
-            0x004E4942 => Ok(ChunkType::Bin),
+            b"JSON" => Ok(ChunkType::Json),
+            b"BIN\0" => Ok(ChunkType::Bin),
             _ => Err(Error::UnknownChunkType(ty)),
         }?;
-        
-        let output = Ok(Self { length, ty });
-        data = &data[8..];
-        output 
+        Ok(Self { length: u8_arr_to_u32(length), ty })
     }
 }
 
 fn split_binary_gltf(mut data: &[u8]) -> Result<(&[u8], Option<&[u8]>), Error> {
-    let (json, data) = ChunkHeader::from_reader(data)
+    let (json, mut data) = ChunkHeader::from_reader(&mut data)
         .and_then(|json_h| {
             if let ChunkType::Json = json_h.ty {
                 Ok(json_h)
@@ -150,7 +144,7 @@ fn split_binary_gltf(mut data: &[u8]) -> Result<(&[u8], Option<&[u8]>), Error> {
         .map(|json_h| data.split_at(json_h.length as usize))?;
 
     let bin = if !data.is_empty() {
-        ChunkHeader::from_reader(data)
+        ChunkHeader::from_reader(&mut data)
             .and_then(|bin_h| {
                 if let ChunkType::Bin = bin_h.ty {
                     Ok(bin_h)
@@ -185,11 +179,11 @@ impl<'a> Glb<'a> {
     /// * Mandatory GLB header.
     /// * Mandatory JSON chunk.
     /// * Optional BIN chunk.
-    pub fn from_slice(data: &'a [u8]) -> Result<Self, crate::Error> {
-        let header = Header::from_reader(data)
+    pub fn from_slice(mut data: &'a [u8]) -> Result<Self, crate::Error> {
+        let header = Header::from_reader(&mut data)
             .and_then(|header| {
                 let contents_length = header.length as usize - Header::size_of();
-                if contents_length <= data.len() { 
+                if contents_length <= data.len() {
                     Ok(header)
                 } else {
                     Err(Error::Length {
@@ -218,6 +212,7 @@ impl fmt::Display for Error {
             f,
             "{}",
             match *self {
+                Error::Io => "Io error",
                 Error::Version(_) => "unsupported version",
                 Error::Magic(_) => "not glTF magic",
                 Error::Length { .. } => "could not completely read the object",
@@ -236,3 +231,7 @@ impl fmt::Display for Error {
 }
 
 impl core::error::Error for Error {}
+
+fn u8_arr_to_u32(arr: [u8; 4]) -> u32 {
+    arr[0] as u32 | (arr[1] as u32) << 8 | (arr[2] as u32) << 16 | (arr[3] as u32) << 24 
+}

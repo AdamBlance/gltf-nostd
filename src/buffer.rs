@@ -1,7 +1,7 @@
 use alloc::string::String;
 use alloc::vec::Vec;
-use core::ops;
 #[cfg(feature = "import")]
+use core::ops;
 
 use crate::Document;
 
