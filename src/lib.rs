@@ -1,5 +1,6 @@
 #![no_std]
 #![feature(error_in_core)]
+#![feature(core_intrinsics)] // lol
 #![deny(missing_docs)]
 #![allow(unknown_lints)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
