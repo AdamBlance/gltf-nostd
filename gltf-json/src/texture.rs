@@ -1,9 +1,10 @@
+use alloc::string::String;
+use core::fmt;
 use crate::validation::{Checked, Validate};
 use crate::{extensions, image, Extras, Index};
 use gltf_derive::Validate;
 use serde::{de, ser};
 use serde_derive::{Deserialize, Serialize};
-use std::fmt;
 
 /// Corresponds to `GL_NEAREST`.
 pub const NEAREST: u32 = 9728;
@@ -382,6 +383,9 @@ impl ser::Serialize for WrappingMode {
 
 #[cfg(test)]
 mod tests {
+    use alloc::vec;
+    use alloc::vec::Vec;
+
     #[test]
     fn deserialize_source() {
         let json = r#"{"asset":{"version":"2.0"},"textures":[{"source": 0}]}"#;

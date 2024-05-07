@@ -1,3 +1,4 @@
+use alloc::string::String;
 use gltf_derive::Validate;
 use serde_derive::{Deserialize, Serialize};
 #[cfg(feature = "extensions")]

@@ -1,11 +1,15 @@
 // Adapted from `validator_derive` (https://github.com/Keats/validator).
 //
 // See LICENSE for details.
+#![no_std]
 
 #![recursion_limit = "128"]
 
 extern crate proc_macro;
+extern crate alloc;
 
+use alloc::string::ToString;
+use alloc::vec::Vec;
 use proc_macro::TokenStream;
 use syn::DeriveInput;
 

@@ -1,3 +1,5 @@
+use alloc::string::String;
+use alloc::vec::Vec;
 use crate::validation::Validate;
 use crate::{camera, extensions, mesh, scene, skin, Extras, Index};
 use gltf_derive::Validate;

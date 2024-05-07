@@ -1,9 +1,10 @@
+use alloc::string::String;
+use core::fmt;
 use crate::validation::{Checked, Error};
 use crate::{extensions, Extras, Path, Root};
 use gltf_derive::Validate;
 use serde::{de, ser};
 use serde_derive::{Deserialize, Serialize};
-use std::fmt;
 
 /// All valid camera types.
 pub const VALID_CAMERA_TYPES: &[&str] = &["perspective", "orthographic"];

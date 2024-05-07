@@ -1,4 +1,6 @@
-use std::fmt;
+use alloc::format;
+use alloc::string::{String, ToString};
+use core::fmt;
 
 /// An immutable JSON source path.
 #[derive(Default, Clone, Debug, PartialEq)]

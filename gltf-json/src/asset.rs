@@ -1,3 +1,4 @@
+use alloc::string::{String, ToString};
 use crate::{extensions, Extras};
 use gltf_derive::Validate;
 use serde_derive::{Deserialize, Serialize};

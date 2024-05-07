@@ -1,3 +1,9 @@
+#![no_std]
+#![feature(error_in_core)]
+
+
+extern crate alloc;
+
 /// Contains `Accessor` and other related data structures.
 pub mod accessor;
 
@@ -92,7 +98,7 @@ pub use serde_json::Value;
 /// so that one can deserialize data structures other than `Root` without
 /// being bound to a specific version of `serde_json`.
 pub mod deserialize {
-    pub use serde_json::{from_reader, from_slice, from_str, from_value};
+    pub use serde_json::{from_slice, from_str, from_value};
 }
 
 /// Re-exports of `serde_json` serialization functions.
@@ -101,7 +107,7 @@ pub mod deserialize {
 /// so that one can serialize data structures other than `Root` without
 /// being bound to a specific version of `serde_json`.
 pub mod serialize {
-    pub use serde_json::{
-        to_string, to_string_pretty, to_value, to_vec, to_vec_pretty, to_writer, to_writer_pretty,
-    };
+    // pub use serde_json::{
+    //     to_string, to_string_pretty, to_value, to_vec, to_vec_pretty, to_writer, to_writer_pretty,
+    // };
 }

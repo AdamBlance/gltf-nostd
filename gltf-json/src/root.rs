@@ -1,10 +1,14 @@
+use alloc::string::String;
+use alloc::vec::Vec;
+use core::{fmt, marker};
 use crate::buffer;
 use crate::extensions;
 use crate::texture;
 use crate::validation;
 use gltf_derive::Validate;
 use serde_derive::{Deserialize, Serialize};
-use std::{self, fmt, io, marker};
+use core2::io;
+
 
 use crate::path::Path;
 use crate::{
@@ -46,7 +50,7 @@ impl<T> Index<T> {
         let Ok(index): Result<u32, _> = len.try_into() else {
             panic!(
                 "glTF vector of {ty} has {len} elements, which exceeds the Index limit",
-                ty = std::any::type_name::<T>(),
+                ty = core::any::type_name::<T>(),
             );
         };
 
@@ -212,13 +216,13 @@ impl Root {
         serde_json::from_slice(slice)
     }
 
-    /// Deserialize from a stream of JSON.
-    pub fn from_reader<R>(reader: R) -> Result<Self, Error>
-    where
-        R: io::Read,
-    {
-        serde_json::from_reader(reader)
-    }
+    // /// Deserialize from a stream of JSON.
+    // pub fn from_reader<R>(reader: R) -> Result<Self, Error>
+    // where
+    //     R: io::Read,
+    // {
+    //     serde_json::from_reader(reader)
+    // }
 
     /// Serialize as a `String` of JSON.
     pub fn to_string(&self) -> Result<String, Error> {
@@ -245,27 +249,27 @@ impl Root {
         serde_json::to_vec_pretty(self)
     }
 
-    /// Serialize as a JSON byte writertor.
-    pub fn to_writer<W>(&self, writer: W) -> Result<(), Error>
-    where
-        W: io::Write,
-    {
-        serde_json::to_writer(writer, self)
-    }
-
-    /// Serialize as a pretty-printed JSON byte writertor.
-    pub fn to_writer_pretty<W>(&self, writer: W) -> Result<(), Error>
-    where
-        W: io::Write,
-    {
-        serde_json::to_writer_pretty(writer, self)
-    }
+    // /// Serialize as a JSON byte writertor.
+    // pub fn to_writer<W>(&self, writer: W) -> Result<(), Error>
+    // where
+    //     W: io::Write,
+    // {
+    //     serde_json::to_writer(writer, self)
+    // }
+    // 
+    // /// Serialize as a pretty-printed JSON byte writertor.
+    // pub fn to_writer_pretty<W>(&self, writer: W) -> Result<(), Error>
+    // where
+    //     W: io::Write,
+    // {
+    //     serde_json::to_writer_pretty(writer, self)
+    // }
 }
 
 impl<T> Index<T> {
     /// Creates a new `Index` representing an offset into an array containing `T`.
     pub fn new(value: u32) -> Self {
-        Index(value, std::marker::PhantomData)
+        Index(value, core::marker::PhantomData)
     }
 
     /// Returns the internal offset value.
@@ -316,12 +320,12 @@ impl<T> Clone for Index<T> {
 impl<T> Copy for Index<T> {}
 
 impl<T> Ord for Index<T> {
-    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+    fn cmp(&self, other: &Self) -> core::cmp::Ordering {
         self.0.cmp(&other.0)
     }
 }
 impl<T> PartialOrd for Index<T> {
-    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+    fn partial_cmp(&self, other: &Self) -> Option<core::cmp::Ordering> {
         Some(self.cmp(other))
     }
 }
@@ -333,8 +337,8 @@ impl<T> PartialEq for Index<T> {
     }
 }
 
-impl<T> std::hash::Hash for Index<T> {
-    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+impl<T> core::hash::Hash for Index<T> {
+    fn hash<H: core::hash::Hasher>(&self, state: &mut H) {
         self.0.hash(state);
     }
 }
@@ -402,8 +406,9 @@ impl_get!(Texture, textures);
 
 #[cfg(test)]
 mod tests {
+    use alloc::borrow::ToOwned;
+    use alloc::vec;
     use super::*;
-    use std::collections::HashSet;
 
     #[test]
     fn index_is_partialeq() {
@@ -411,13 +416,13 @@ mod tests {
         assert_ne!(Index::<Node>::new(1), Index::new(2));
     }
 
-    #[test]
-    fn index_is_hash() {
-        let set = HashSet::from([Index::<Node>::new(1), Index::new(1234)]);
-        assert!(set.contains(&Index::new(1234)));
-        assert!(!set.contains(&Index::new(999)));
-        assert_eq!(set.len(), 2);
-    }
+    // #[test]
+    // fn index_is_hash() {
+    //     let set = HashSet::from([Index::<Node>::new(1), Index::new(1234)]);
+    //     assert!(set.contains(&Index::new(1234)));
+    //     assert!(!set.contains(&Index::new(999)));
+    //     assert_eq!(set.len(), 2);
+    // }
 
     #[test]
     fn index_is_ord() {

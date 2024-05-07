@@ -13,6 +13,8 @@ gltf-derive = { path = "../gltf-derive", version = "1.4.0" }
 serde = { version = "1.0", default-features = false, features = ["alloc"] }
 serde_derive = { version = "1.0" }
 serde_json = { default-features = false, features = ["alloc", "raw_value"], version = "1.0" }
+core2 = { version = "0.4.0", default-features = false, features = ["alloc"]}
+
 
 [features]
 default = []

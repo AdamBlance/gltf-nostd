@@ -1,3 +1,4 @@
+use alloc::string::String;
 #[cfg(feature = "KHR_texture_transform")]
 use crate::{extras::Extras, validation::Validate};
 use gltf_derive::Validate;

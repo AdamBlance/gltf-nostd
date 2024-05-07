@@ -1,3 +1,4 @@
+use alloc::string::String;
 use gltf_derive::Validate;
 use serde_derive::{Deserialize, Serialize};
 #[cfg(feature = "extensions")]
@@ -30,12 +31,13 @@ pub struct Node {
 
 #[cfg(feature = "KHR_lights_punctual")]
 pub mod khr_lights_punctual {
+    use alloc::string::String;
+    use core::fmt;
     use crate::validation::{Checked, Error};
     use crate::{Extras, Index, Path, Root};
     use gltf_derive::Validate;
     use serde::{de, ser};
     use serde_derive::{Deserialize, Serialize};
-    use std::fmt;
 
     /// All valid light types.
     pub const VALID_TYPES: &[&str] = &["directional", "point", "spot"];
@@ -85,7 +87,7 @@ pub mod khr_lights_punctual {
 
         /// Extension specific data.
         #[serde(default, skip_serializing_if = "Option::is_none")]
-        pub extensions: Option<std::boxed::Box<serde_json::value::RawValue>>,
+        pub extensions: Option<alloc::boxed::Box<serde_json::value::RawValue>>,
 
         /// Optional application specific data.
         #[serde(default)]
@@ -151,7 +153,7 @@ pub mod khr_lights_punctual {
     }
 
     fn outer_cone_angle_default() -> f32 {
-        std::f32::consts::FRAC_PI_4
+        core::f32::consts::FRAC_PI_4
     }
 
     impl<'de> de::Deserialize<'de> for Checked<Type> {
@@ -201,6 +203,7 @@ pub mod khr_lights_punctual {
 
 #[cfg(feature = "KHR_materials_variants")]
 pub mod khr_materials_variants {
+    use alloc::string::String;
     use crate::validation::{Error, Validate};
     use crate::{Path, Root};
     use serde_derive::{Deserialize, Serialize};

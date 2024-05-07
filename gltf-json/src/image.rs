@@ -1,3 +1,4 @@
+use alloc::string::String;
 use crate::validation::Validate;
 use crate::{buffer, extensions, Extras, Index};
 use gltf_derive::Validate;

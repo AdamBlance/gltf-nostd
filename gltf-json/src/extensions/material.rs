@@ -1,3 +1,4 @@
+use alloc::string::String;
 #[allow(unused_imports)] // different features use different imports
 use crate::{material::StrengthFactor, texture, validation::Validate, Extras};
 use gltf_derive::Validate;
