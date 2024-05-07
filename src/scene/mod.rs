@@ -67,7 +67,7 @@ impl Transform {
                 );
                 let sx = i.x.magnitude();
                 let sy = i.y.magnitude();
-                let sz = i.determinant().signum() * i.z.magnitude();
+                let sz = (if i.determinant() < 0.0 {-1.0} else {1.0}) * i.z.magnitude();
                 let scale = [sx, sy, sz];
                 i.x.multiply(1.0 / sx);
                 i.y.multiply(1.0 / sy);
