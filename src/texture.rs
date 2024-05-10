@@ -169,14 +169,14 @@ impl<'a> Texture<'a> {
     //     }
     // }
 
-    /// Returns the image used by this texture.
-    #[cfg(not(feature = "allow_empty_texture"))]
-    pub fn source(&self) -> image::Image<'a> {
-        self.document
-            .images()
-            .nth(self.json.source.value())
-            .unwrap()
-    }
+    // /// Returns the image used by this texture.
+    // #[cfg(not(feature = "allow_empty_texture"))]
+    // pub fn source(&self) -> image::Image<'a> {
+    //     self.document
+    //         .images()
+    //         .nth(self.json.source.value())
+    //         .unwrap()
+    // }
 
     /// Returns extension data unknown to this crate version.
     #[cfg(feature = "extensions")]
