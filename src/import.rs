@@ -1,12 +1,11 @@
 use alloc::vec::Vec;
 use crate::buffer;
-use crate::image;
+// use crate::image;
 
 use crate::{Document, Error, Gltf, Result};
-use image_crate::ImageFormat::{Jpeg, Png};
 
 /// Return type of `import`.
-type Import = (Document, Vec<buffer::Data>, Vec<image::Data>);
+type Import = (Document, Vec<buffer::Data>);
 
 impl buffer::Data {
     /// Construct a buffer data object by reading the given source.
@@ -50,65 +49,65 @@ pub fn import_buffers(
     Ok(buffers)
 }
 
-impl image::Data {
-    /// Construct an image data object by reading the given source.
-    /// If `base` is provided, then external filesystem references will
-    /// be resolved from this directory.
-    pub fn from_source(
-        source: image::Source<'_>,
-        buffer_data: &[buffer::Data],
-    ) -> Result<Self> {
-        #[cfg(feature = "guess_mime_type")]
-        let guess_format = |encoded_image: &[u8]| match image_crate::guess_format(encoded_image) {
-            Ok(image_crate::ImageFormat::Png) => Some(Png),
-            Ok(image_crate::ImageFormat::Jpeg) => Some(Jpeg),
-            _ => None,
-        };
-        #[cfg(not(feature = "guess_mime_type"))]
-        let guess_format = |_encoded_image: &[u8]| None;
-        let decoded_image = match source {
-            image::Source::View { view, mime_type } => {
-                let parent_buffer_data = &buffer_data[view.buffer().index()].0;
-                let begin = view.offset();
-                let end = begin + view.length();
-                let encoded_image = &parent_buffer_data[begin..end];
-                let encoded_format = match mime_type {
-                    "image/png" => Png,
-                    "image/jpeg" => Jpeg,
-                    _ => match guess_format(encoded_image) {
-                        Some(format) => format,
-                        None => return Err(Error::UnsupportedImageEncoding),
-                    },
-                };
-                image_crate::load_from_memory_with_format(encoded_image, encoded_format)?
-            }
-        };
+// impl image::Data {
+//     /// Construct an image data object by reading the given source.
+//     /// If `base` is provided, then external filesystem references will
+//     /// be resolved from this directory.
+//     pub fn from_source(
+//         source: image::Source<'_>,
+//         buffer_data: &[buffer::Data],
+//     ) -> Result<Self> {
+//         #[cfg(feature = "guess_mime_type")]
+//         let guess_format = |encoded_image: &[u8]| match image_crate::guess_format(encoded_image) {
+//             Ok(image_crate::ImageFormat::Png) => Some(Png),
+//             Ok(`image_crate::ImageFormat::Jpeg) => Some(Jpeg),
+//             _ => None,
+//         };
+//         #[cfg(not(feature = "guess_mime_type"))]
+//         let guess_format = |_encoded_image: &[u8]| None;
+//         let decoded_image = match source {
+//             image::Source::View { view, mime_type } => {
+//                 let parent_buffer_data = &buffer_data[view.buffer().index()].0;
+//                 let begin = view.offset();
+//                 let end = begin + view.length();
+//                 let encoded_image = &parent_buffer_data[begin..end];
+//                 let encoded_format = match mime_type {
+//                     "image/png" => Png,
+//                     "image/jpeg" => Jpeg,
+//                     _ => match guess_format(encoded_image) {
+//                         Some(format) => format,
+//                         None => return Err(Error::UnsupportedImageEncoding),
+//                     },
+//                 };
+//                 image_crate::load_from_memory_with_format(encoded_image, encoded_format)?
+//             }
+//         };
+// 
+//         image::Data::new(decoded_image)
+//     }
+// }
 
-        image::Data::new(decoded_image)
-    }
-}
-
-/// Import image data referenced by a glTF document.
-///
-/// ### Note
-///
-/// This function is intended for advanced users who wish to forego loading buffer data.
-/// A typical user should call [`import`] instead.
-pub fn import_images(
-    document: &Document,
-    buffer_data: &[buffer::Data],
-) -> Result<Vec<image::Data>> {
-    let mut images = Vec::new();
-    for image in document.images() {
-        images.push(image::Data::from_source(image.source(), buffer_data)?);
-    }
-    Ok(images)
-}
+// /// Import image data referenced by a glTF document.
+// ///
+// /// ### Note
+// ///
+// /// This function is intended for advanced users who wish to forego loading buffer data.
+// /// A typical user should call [`import`] instead.
+// pub fn import_images(
+//     document: &Document,
+//     buffer_data: &[buffer::Data],
+// ) -> Result<Vec<image::Data>> {
+//     let mut images = Vec::new();
+//     for image in document.images() {
+//         images.push(image::Data::from_source(image.source(), buffer_data)?);
+//     }
+//     Ok(images)
+// }
 
 fn import_impl(Gltf { document, blob }: Gltf) -> Result<Import> {
     let buffer_data = import_buffers(&document, blob)?;
-    let image_data = import_images(&document, &buffer_data)?;
-    let import = (document, buffer_data, image_data);
+    // let image_data = import_images(&document, &buffer_data)?;
+    let import = (document, buffer_data);
     Ok(import)
 }
 

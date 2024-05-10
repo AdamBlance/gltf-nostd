@@ -30,11 +30,11 @@ lazy_static = { version = "1.4.0", default-features = false, features = ["spin_n
 serde_json = { default-features = false, features = ["raw_value", "alloc"], version = "1.0" }
 core2 = { version = "0.4.0", default-features = false, features = ["alloc"]}
 
-[dependencies.image]
-default-features = false
-features = ["jpeg", "png"]
-optional = true
-version = "0.25"
+#[dependencies.image]
+#default-features = false
+#features = ["jpeg", "png"]
+#optional = true
+#version = "0.25"
 
 [features]
 default = ["utils", "names"]
@@ -43,7 +43,7 @@ extensions = ["gltf-json/extensions"]
 extras = ["gltf-json/extras"]
 names = ["gltf-json/names"]
 utils = []
-import = ["base64", "image"]
+import = ["base64"]
 KHR_lights_punctual = ["gltf-json/KHR_lights_punctual"]
 KHR_materials_pbrSpecularGlossiness = ["gltf-json/KHR_materials_pbrSpecularGlossiness"]
 KHR_materials_unlit = ["gltf-json/KHR_materials_unlit"]

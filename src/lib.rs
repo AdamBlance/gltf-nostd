@@ -85,8 +85,8 @@
 #[cfg(test)]
 #[macro_use]
 extern crate approx;
-#[cfg(feature = "import")]
-extern crate image as image_crate;
+// #[cfg(feature = "import")]
+// extern crate image as image_crate;
 #[macro_use]
 extern crate lazy_static;
 
@@ -168,15 +168,15 @@ pub use self::buffer::Buffer;
 pub use self::camera::Camera;
 #[doc(inline)]
 pub use self::image::Image;
-#[cfg(feature = "import")]
-#[doc(inline)]
-pub use self::import::Import;
+// #[cfg(feature = "import")]
+// #[doc(inline)]
+// pub use self::import::import;
 #[cfg(feature = "import")]
 #[doc(inline)]
 pub use self::import::import_buffers;
-#[cfg(feature = "import")]
-#[doc(inline)]
-pub use self::import::import_images;
+// #[cfg(feature = "import")]
+// #[doc(inline)]
+// pub use self::import::import_images;
 #[cfg(feature = "import")]
 #[doc(inline)]
 pub use self::import::import_slice;
@@ -226,10 +226,10 @@ pub enum Error {
     /// JSON deserialization error.
     Deserialize(json::Error),
 
-    /// Image decoding error.
-    #[cfg(feature = "import")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "import")))]
-    Image(image_crate::ImageError),
+    // /// Image decoding error.
+    // #[cfg(feature = "import")]
+    // #[cfg_attr(docsrs, doc(cfg(feature = "import")))]
+    // Image(image_crate::ImageError),
 
     /// The `BIN` chunk of binary glTF is referenced but does not exist.
     #[cfg(feature = "import")]
@@ -246,10 +246,10 @@ pub enum Error {
     #[cfg_attr(docsrs, doc(cfg(feature = "import")))]
     UnsupportedImageEncoding,
 
-    /// Unsupported image format.
-    #[cfg(feature = "import")]
-    #[cfg_attr(docsrs, doc(cfg(feature = "import")))]
-    UnsupportedImageFormat(image_crate::DynamicImage),
+    // /// Unsupported image format.
+    // #[cfg(feature = "import")]
+    // #[cfg_attr(docsrs, doc(cfg(feature = "import")))]
+    // UnsupportedImageFormat(image_crate::DynamicImage),
 
     /// Unsupported URI scheme.
     #[cfg(feature = "import")]
@@ -552,8 +552,8 @@ impl core::fmt::Display for Error {
                 )
             }
             Error::Deserialize(ref e) => e.fmt(f),
-            #[cfg(feature = "import")]
-            Error::Image(ref e) => e.fmt(f),
+            // #[cfg(feature = "import")]
+            // Error::Image(ref e) => e.fmt(f),
             #[cfg(feature = "import")]
             Error::MissingBlob => write!(f, "missing binary portion of binary glTF"),
             #[cfg(feature = "import")]
@@ -562,10 +562,10 @@ impl core::fmt::Display for Error {
             }
             #[cfg(feature = "import")]
             Error::UnsupportedImageEncoding => write!(f, "unsupported image encoding"),
-            #[cfg(feature = "import")]
-            Error::UnsupportedImageFormat(image) => {
-                write!(f, "unsupported image format: {:?}", image.color())
-            }
+            // #[cfg(feature = "import")]
+            // Error::UnsupportedImageFormat(image) => {
+            //     write!(f, "unsupported image format: {:?}", image.color())
+            // }
             #[cfg(feature = "import")]
             Error::UnsupportedScheme => write!(f, "unsupported URI scheme"),
             Error::Validation(ref xs) => {
@@ -587,12 +587,12 @@ impl From<binary::Error> for Error {
     }
 }
 
-#[cfg(feature = "import")]
-impl From<image_crate::ImageError> for Error {
-    fn from(err: image_crate::ImageError) -> Self {
-        Error::Image(err)
-    }
-}
+// #[cfg(feature = "import")]
+// impl From<image_crate::ImageError> for Error {
+//     fn from(err: image_crate::ImageError) -> Self {
+//         Error::Image(err)
+//     }
+// }
 
 impl From<json::Error> for Error {
     fn from(err: json::Error) -> Self {

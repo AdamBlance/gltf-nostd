@@ -3,9 +3,9 @@ use alloc::vec::Vec;
 #[allow(unused)]
 use crate::{buffer, Document, Error, Result};
 
-#[cfg(feature = "import")]
-#[cfg_attr(docsrs, doc(cfg(feature = "import")))]
-use image_crate::DynamicImage;
+// #[cfg(feature = "import")]
+// #[cfg_attr(docsrs, doc(cfg(feature = "import")))]
+// use image_crate::DynamicImage;
 #[cfg(feature = "extensions")]
 use serde_json::{Map, Value};
 
@@ -144,32 +144,32 @@ impl<'a> Image<'a> {
     }
 }
 
-#[cfg(feature = "import")]
-impl Data {
-    /// Note: We don't implement `From<DynamicImage>` since we don't want
-    /// to expose such functionality to the user.
-    pub(crate) fn new(image: DynamicImage) -> Result<Self> {
-        use image_crate::GenericImageView;
-        let format = match image {
-            DynamicImage::ImageLuma8(_) => Format::R8,
-            DynamicImage::ImageLumaA8(_) => Format::R8G8,
-            DynamicImage::ImageRgb8(_) => Format::R8G8B8,
-            DynamicImage::ImageRgba8(_) => Format::R8G8B8A8,
-            DynamicImage::ImageLuma16(_) => Format::R16,
-            DynamicImage::ImageLumaA16(_) => Format::R16G16,
-            DynamicImage::ImageRgb16(_) => Format::R16G16B16,
-            DynamicImage::ImageRgba16(_) => Format::R16G16B16A16,
-            DynamicImage::ImageRgb32F(_) => Format::R32G32B32FLOAT,
-            DynamicImage::ImageRgba32F(_) => Format::R32G32B32A32FLOAT,
-            image => return Err(Error::UnsupportedImageFormat(image)),
-        };
-        let (width, height) = image.dimensions();
-        let pixels = image.into_bytes();
-        Ok(Data {
-            format,
-            width,
-            height,
-            pixels,
-        })
-    }
-}
+// #[cfg(feature = "import")]
+// impl Data {
+//     /// Note: We don't implement `From<DynamicImage>` since we don't want
+//     /// to expose such functionality to the user.
+//     pub(crate) fn new(image: DynamicImage) -> Result<Self> {
+//         use image_crate::GenericImageView;
+//         let format = match image {
+//             DynamicImage::ImageLuma8(_) => Format::R8,
+//             DynamicImage::ImageLumaA8(_) => Format::R8G8,
+//             DynamicImage::ImageRgb8(_) => Format::R8G8B8,
+//             DynamicImage::ImageRgba8(_) => Format::R8G8B8A8,
+//             DynamicImage::ImageLuma16(_) => Format::R16,
+//             DynamicImage::ImageLumaA16(_) => Format::R16G16,
+//             DynamicImage::ImageRgb16(_) => Format::R16G16B16,
+//             DynamicImage::ImageRgba16(_) => Format::R16G16B16A16,
+//             DynamicImage::ImageRgb32F(_) => Format::R32G32B32FLOAT,
+//             DynamicImage::ImageRgba32F(_) => Format::R32G32B32A32FLOAT,
+//             image => return Err(Error::UnsupportedImageFormat(image)),
+//         };
+//         let (width, height) = image.dimensions();
+//         let pixels = image.into_bytes();
+//         Ok(Data {
+//             format,
+//             width,
+//             height,
+//             pixels,
+//         })
+//     }
+// }

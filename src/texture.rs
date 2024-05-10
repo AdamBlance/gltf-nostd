@@ -1,5 +1,5 @@
 use alloc::string::String;
-use crate::{image, Document};
+use crate::Document;
 
 pub use json::texture::{MagFilter, MinFilter, WrappingMode};
 #[cfg(feature = "extensions")]
@@ -158,16 +158,16 @@ impl<'a> Texture<'a> {
             .unwrap_or_else(|| Sampler::default(self.document))
     }
 
-    /// Returns the image used by this texture.
-    #[cfg(feature = "allow_empty_texture")]
-    pub fn source(&self) -> Option<image::Image<'a>> {
-        let index = self.json.source.value();
-        if index == u32::MAX as usize {
-            None
-        } else {
-            Some(self.document.images().nth(index).unwrap())
-        }
-    }
+    // /// Returns the image used by this texture.
+    // #[cfg(feature = "allow_empty_texture")]
+    // pub fn source(&self) -> Option<image::Image<'a>> {
+    //     let index = self.json.source.value();
+    //     if index == u32::MAX as usize {
+    //         None
+    //     } else {
+    //         Some(self.document.images().nth(index).unwrap())
+    //     }
+    // }
 
     /// Returns the image used by this texture.
     #[cfg(not(feature = "allow_empty_texture"))]
