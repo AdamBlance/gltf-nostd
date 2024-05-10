@@ -12,6 +12,11 @@
 
 ---
 
+An absolute butchering of the `gltf` crate which allows it to be used (with limited functionality) in `no_std` environments.
+
+---
+
+
 This crate is intended to load [glTF 2.0](https://www.khronos.org/gltf), a file format designed for the efficient transmission of 3D assets.
 
 `rustc` version 1.61 or above is required.
